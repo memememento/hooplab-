@@ -424,6 +424,7 @@ const FIG = (() => {
   const pt = (J, v) => (typeof v === 'string' ? J[v] : v);
 
   const PROPS = {
+    barbell: (J, o) => { const [x, y] = add(pt(J, o.at), o.off || [-8, 2]); return `<circle cx="${f(x)}" cy="${f(y)}" r="7" class="eq"/><circle cx="${f(x)}" cy="${f(y)}" r="2" class="eye"/>`; },
     kb: (J, o) => { const [x, y] = add(pt(J, o.at), o.off || [3, 5]); return `<path d="M${f(x - 4)},${f(y - 4)} q4,-8 8,0" class="eqs"/><circle cx="${f(x)}" cy="${f(y + 1)}" r="6.5" class="eq"/>`; },
     db: (J, o) => {
       const [x, y] = add(pt(J, o.at), o.off || [0, 0]);
@@ -701,6 +702,15 @@ const EX = (() => {
       mods: ['Elbow irritated by holding the weight: use bodyweight, a light weight cradled in both palms, or a Smith/leg-press machine.', 'Limited depth: squat to a box.'],
       frames: [{ label: 'Start', pose: m(STAND, { armN: [22, 150], armF: [20, 152] }), props: [{ t: 'kb', at: 'handN', off: [2, 8], front: true }] },
       { label: 'Bottom', pose: { torso: 150, legN: [80, -30, 90], legF: [78, -32, 90], armN: [45, 160], armF: [43, 162] }, props: [{ t: 'kb', at: 'handN', off: [2, 8], front: true }], arrows: [{ a: 'hip', ao: [-14, -30], b: 'hip', bo: [-14, -6], m: 1, both: true }] }]
+    },
+    {
+      id: 'squat_heavy', name: 'Squat (Smith machine or leg press)', cat: 'lower', log: 'strength', rest: 150,
+      purpose: 'Heavier squats build the leg strength behind your jump. Paired with jumps right after (complex training), this is the main vertical-jump builder in your plan.',
+      steps: ['Smith machine: bar across your upper back, feet slightly forward, about shoulder-width.', 'Hold the bar loosely, thumbs over the top, wrists straight. Your back holds the weight, not your hands.', 'Brace, then sit down until thighs are about parallel or as deep as you control.', 'Drive up powerfully through the whole foot.', 'Leave the prescribed reps in reserve. Never grind to failure.'],
+      mistakes: ['Squeezing the bar hard (stresses the elbow).', 'Knees caving in.', 'Bouncing out of the bottom.', 'Going to failure; it slows recovery for the next vertical day.'],
+      mods: ['Leg press if holding the bar bothers your right elbow: same sets and reps, no gripping needed.', 'Goblet squat with a lighter weight if no machine is free.'],
+      frames: [{ label: 'Start', pose: m(STAND, { armN: [-35, 170], armF: [-33, 172] }), props: [{ t: 'barbell', at: 'sh', front: true }] },
+        { label: 'Bottom', pose: { torso: 145, legN: [82, -30, 90], legF: [80, -32, 90], armN: [-5, 150], armF: [-3, 152] }, props: [{ t: 'barbell', at: 'sh', front: true }], arrows: [{ a: 'hip', ao: [-16, -28], b: 'hip', bo: [-16, -4], m: 1, both: true }] }]
     },
     {
       id: 'rdl', name: 'Romanian deadlift (dumbbells)', cat: 'lower', log: 'strength', rest: 90,
@@ -1045,7 +1055,7 @@ const PROGRAM = (() => {
       title: 'Complete rest', short: 'Rest', type: 'rest', icon: 'rest',
       purpose: ['Recover before Tuesday basketball', 'Avoid unnecessary fatigue'],
       items: () => [i('walk_easy', 1, '10–30 min', 0, { optional: true }), i('hip_mobility', 1, '30–45 s/side', 0, { optional: true }), i('ankle_mobility', 1, '10/side', 0, { optional: true })],
-      note: 'No demanding workout today. Everything below is optional.'
+      note: 'No demanding workout and no jumping the day before a game. Everything below is optional.'
     },
     tue: {
       title: 'Basketball game', short: 'Game', type: 'game', icon: 'ball',
@@ -1064,16 +1074,19 @@ const PROGRAM = (() => {
       note: 'Conversational pace. You should finish feeling better than when you started.'
     },
     thu: {
-      title: 'Lower-body strength + jump foundations', short: 'Lower + jump', type: 'train', icon: 'legs',
-      purpose: ['Build strength', 'Improve force production', 'Foundation for vertical-jump development'],
-      items: p => ({
-        1: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '4', 60), i('pogo', 2, '8–10 (low)', 75, { note: 'Only if calves/Achilles/knees feel fine. Skip if in doubt.' }), i('goblet_squat', 2, '8–10', 90, { load: 'Light — 3+ reps in reserve' }), i('rdl', 2, '8–10', 90, { load: 'Light — 3+ reps in reserve' }), i('reverse_lunge', 2, '6/leg', 75, { load: 'Bodyweight' }), i('calf_raise', 2, '12', 60)],
-        2: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 3, '4', 60), i('pogo', 2, '10 (low)', 75), i('squat_jump', 2, '3 (controlled)', 90, { note: 'Only if snap-down landings are consistently solid.', optional: true }), i('goblet_squat', 3, '8', 90, { load: '2–3 reps in reserve' }), i('rdl', 3, '8', 90, { load: '2–3 reps in reserve' }), i('reverse_lunge', 3, '6–8/leg', 75), i('ham_curl', 2, '10', 75), i('calf_raise', 3, '12', 60)],
-        3: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '4', 60), i('cmj', 3, '3', 90), i('broad_jump', 3, '2', 90), i('lateral_bound', 2, '3/side', 90), i('goblet_squat', 3, '6–8', 120, { load: 'Heavier, 2 reps in reserve' }), i('rdl', 3, '6–8', 120), i('reverse_lunge', 3, '6/leg', 90), i('ham_curl', 2, '8–10', 75), i('calf_raise', 3, '10 (slow lowering)', 60)],
-        4: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '3', 60), i('approach_2f', 3, '2', 120, { note: 'Short approach, ~80–90% effort. Stop if height drops.' }), i('approach_1f', 2, '2/side', 120, { optional: true }), i('lateral_bound', 3, '3/side', 90), i('goblet_squat', 3, '5–6', 120, { load: 'Heavier, 2 reps in reserve' }), i('rdl', 3, '6', 120), i('reverse_lunge', 3, '6/leg', 90), i('calf_raise', 3, '10', 60)],
-        5: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '3', 60), i('approach_2f', 3, '2', 120), i('approach_1f', 2, '2/side', 120), i('cmj', 2, '3', 90), i('goblet_squat', 3, '5–6', 120), i('rdl', 3, '6', 120), i('reverse_lunge', 3, '6/leg', 90), i('ham_curl', 2, '8', 75), i('calf_raise', 3, '10', 60)]
-      })[p],
-      note: 'Jumps come first while you are fresh. Light loads, leave several reps in reserve. Plyometrics are conservative — only do them if landings are quiet and controlled.'
+      title: 'Vertical day 1: squats + jumps', short: 'Vert 1', type: 'train', icon: 'legs',
+      purpose: ['Squats paired with jumps (complex training)', 'Build the strength and power behind your vertical', '5 days before the next game: full recovery time'],
+      items: p => {
+        const A = 'A', B = 'B';
+        return ({
+          1: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '4', 60), i('goblet_squat', 2, '8', 120, { pair: A, load: 'Light — 3+ reps in reserve' }), i('cmj', 2, '3 @ ~70% effort, stick each landing', 120, { pair: A }), i('rdl', 2, '8', 90, { load: 'Light — 3+ reps in reserve' }), i('reverse_lunge', 2, '6/leg', 75, { load: 'Bodyweight' }), i('pogo', 2, '8 (low)', 75, { note: 'Only if calves/Achilles/knees feel fine.' }), i('calf_raise', 2, '12', 60)],
+          2: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '4', 60), i('goblet_squat', 3, '6–8', 120, { pair: A, load: '2–3 reps in reserve' }), i('cmj', 3, '3, full effort, stick it', 120, { pair: A }), i('rdl', 3, '8', 120, { pair: B, load: '2–3 reps in reserve' }), i('broad_jump', 3, '2 (stick)', 120, { pair: B }), i('reverse_lunge', 2, '6/leg', 75), i('ham_curl', 2, '10', 75), i('pogo', 2, '10 (low)', 75), i('calf_raise', 3, '12', 60)],
+          3: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '3', 60), i('squat_heavy', 3, '5 (~80% effort)', 150, { pair: A, load: '2 reps in reserve' }), i('cmj', 3, '4, full effort', 120, { pair: A }), i('rdl', 3, '6', 120, { pair: B }), i('broad_jump', 3, '2 (stick)', 120, { pair: B }), i('reverse_lunge', 2, '6/leg', 90), i('ham_curl', 2, '8', 75), i('calf_raise', 3, '10 (slow lowering)', 60)],
+          4: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '3', 60), i('squat_heavy', 3, '4 (~85% effort)', 180, { pair: A, load: '1–2 reps in reserve' }), i('cmj', 3, '4, full effort', 120, { pair: A }), i('rdl', 3, '5', 120, { pair: B }), i('broad_jump', 3, '3 (stick)', 120, { pair: B }), i('lateral_bound', 2, '3/side', 90), i('calf_raise', 3, '10', 60)],
+          5: [i('bike_warmup', 1, '5–7 min', 0), i('snap_down', 2, '3', 60), i('squat_heavy', 3, '4–5', 180, { pair: A, load: '1–2 reps in reserve' }), i('cmj', 3, '4, full effort', 120, { pair: A }), i('rdl', 3, '5–6', 120, { pair: B }), i('broad_jump', 3, '3 (stick)', 120, { pair: B }), i('lateral_bound', 2, '3/side', 90), i('ham_curl', 2, '8', 75), i('calf_raise', 3, '10', 60)]
+        })[p];
+      },
+      note: 'Pairs: do one set of the lift, rest 2–3 min, then one set of the jumps, rest 2–3 min, and repeat. Every jump at full intent with a quiet, stuck landing. Stop a set if height or landings get worse.'
     },
     fri: {
       title: 'Upper-body strength + elbow rehab', short: 'Upper + rehab', type: 'train', icon: 'arm',
@@ -1085,16 +1098,16 @@ const PROGRAM = (() => {
       note: 'Modify or omit ANY upper-body exercise that provokes elbow symptoms. Prefer comfortable grips and slow, controlled movement.'
     },
     sat: {
-      title: 'Basketball conditioning', short: 'Conditioning', type: 'train', icon: 'bolt',
-      purpose: ['Improve repeated-effort capacity', 'Improve cardiovascular fitness', 'Recover faster between intense efforts'],
+      title: 'Vertical day 2: jumps + conditioning', short: 'Vert 2', type: 'train', icon: 'bolt',
+      purpose: ['Pure jump training while fresh', 'Short bike intervals afterwards for game stamina', '72 h before Tuesday: legs recover in time'],
       items: p => ({
-        1: [i('bike_warmup', 1, '8 min (bike + movement)', 0), i('bike_intervals', 5, '1 min @ RPE 6–7 / 2 min easy', 120), i('cooldown_walk', 1, '5 min easy', 0)],
-        2: [i('bike_warmup', 1, '8 min', 0), i('bike_intervals', 6, '1 min @ RPE 7 / 2 min easy', 120), i('cooldown_walk', 1, '5 min easy', 0)],
-        3: [i('bike_warmup', 1, '8 min', 0), i('bike_intervals', 6, '1 min @ RPE 7–8 / 90 s easy', 90), i('court_shuttle', 4, 'baseline→FT line & back @ ~70%', 60, { optional: true, note: 'Only if knees, shins and Achilles feel good.' }), i('cooldown_walk', 1, '5 min easy', 0)],
-        4: [i('bike_warmup', 1, '8 min', 0), i('bike_intervals', 8, '30 s @ RPE 8 / 90 s easy', 90), i('court_shuttle', 6, 'baseline→half court & back @ ~80%', 50), i('cooldown_walk', 1, '5 min easy', 0)],
-        5: [i('bike_warmup', 1, '8 min', 0), i('bike_intervals', 8, '30 s @ RPE 8 / 75–90 s easy', 90), i('court_shuttle', 6, 'baseline→half court & back @ ~80%', 50), i('cooldown_walk', 1, '5 min easy', 0)]
+        1: [i('bike_warmup', 1, '8 min (bike + movement)', 0), i('snap_down', 2, '4', 60), i('pogo', 2, '8 (low)', 75), i('squat_jump', 2, '3 @ ~70%, pause in the dip', 90), i('bike_intervals', 4, '1 min @ RPE 6–7 / 2 min easy', 120), i('cooldown_walk', 1, '5 min easy', 0)],
+        2: [i('bike_warmup', 1, '8 min', 0), i('snap_down', 2, '3', 60), i('pogo', 2, '10 (low)', 75), i('squat_jump', 3, '3, full effort', 90), i('cmj', 2, '3, full effort', 90), i('bike_intervals', 5, '1 min @ RPE 7 / 2 min easy', 120), i('cooldown_walk', 1, '5 min easy', 0)],
+        3: [i('bike_warmup', 1, '8 min', 0), i('pogo', 2, '10', 75), i('approach_2f', 3, '2 (short approach)', 120), i('lateral_bound', 2, '3/side', 90), i('squat_jump', 2, '3', 90), i('bike_intervals', 5, '1 min @ RPE 7–8 / 90 s easy', 90), i('court_shuttle', 3, 'baseline→FT line & back @ ~70%', 60, { optional: true, note: 'Only if knees, shins and Achilles feel good.' }), i('cooldown_walk', 1, '5 min easy', 0)],
+        4: [i('bike_warmup', 1, '8 min', 0), i('pogo', 2, '12', 75), i('approach_2f', 3, '3', 120, { note: 'Short approach, ~90% effort. Stop if height drops.' }), i('approach_1f', 2, '2/side', 120), i('lateral_bound', 3, '3/side', 90), i('bike_intervals', 6, '30 s @ RPE 8 / 90 s easy', 90), i('court_shuttle', 4, 'baseline→half court & back @ ~80%', 50, { optional: true }), i('cooldown_walk', 1, '5 min easy', 0)],
+        5: [i('bike_warmup', 1, '8 min', 0), i('pogo', 2, '12', 75), i('approach_2f', 3, '3', 120), i('approach_1f', 2, '2/side', 120), i('lateral_bound', 3, '3/side', 90), i('bike_intervals', 6, '30 s @ RPE 8 / 75–90 s easy', 90), i('court_shuttle', 4, 'baseline→half court & back @ ~80%', 50, { optional: true }), i('cooldown_walk', 1, '5 min easy', 0)]
       })[p],
-      note: 'No all-out sprinting. Effort ratings (RPE) guide intensity: 6–7 = hard but controlled.'
+      note: 'Jumps first, while you are fresh, then the bike. Full intent on every jump, full rest between sets. No all-out sprinting.'
     },
     sun: {
       title: 'Agility + easy aerobic', short: 'Agility', type: 'train', icon: 'feet',
@@ -1106,7 +1119,7 @@ const PROGRAM = (() => {
         4: [i('def_shuffle', 4, '12 s with 2 direction changes', 45), i('decel_drill', 3, '4 @ 70–80%', 60), i('closeout', 3, '5', 60), i('cod_drill', 4, '1 @ 75–80%', 75), i('sl_balance', 2, '30 s/side (reach)', 30), i('aerobic', 1, '20 min easy', 0)],
         5: [i('def_shuffle', 4, '12 s with 2 direction changes', 45), i('decel_drill', 3, '4 @ 75–80%', 60), i('closeout', 3, '5', 60), i('cod_drill', 4, '1 @ 80%', 75), i('aerobic', 1, '20 min easy', 0)]
       })[p],
-      note: 'Controlled movement before speed. No maximal cutting.'
+      note: 'No jumping today: the game is in 2 days. Controlled movement before speed, no maximal cutting.'
     }
   };
 
@@ -1148,7 +1161,7 @@ const PROGRAM = (() => {
 /* ---- core.js ---- */
 /* HoopLab — core: utilities, storage, photos DB, charts, icons, timer, sheets */
 'use strict';
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 const LS_KEY = 'hooplab.v1';
 
 /* ---------- dates & utils ---------- */
@@ -1633,13 +1646,13 @@ function vToday() {
 function reminders(t) {
   const dk = dayKey(t), out = [];
   const R = {
-    mon: 'Rest day — basketball tomorrow. Eat normally (don\'t under-eat), hydrate and aim for 7–9 h of sleep.',
+    mon: 'Rest day, no jumping: basketball tomorrow. Eat normally (don\'t under-eat), hydrate and aim for 7–9 h of sleep.',
     tue: 'Game day: a carb-containing meal 2–3 h before, water through the day, full 8–12 min warm-up, cool-down walk after. Log the game.',
     wed: 'Easy day after the game. Keep cardio conversational — you should finish feeling better.',
-    thu: 'Jumps first while fresh. End a set early if landings get loud or height drops.',
+    thu: 'Vertical day 1: squat set, rest, jump set, rest. Full effort on every jump, and end a set if landings get loud or height drops.',
     fri: 'Upper body: modify or omit anything that provokes your elbow. Do your prescribed rehab.',
-    sat: 'Hard-but-controlled intervals — no all-out sprinting. Refuel with carbs + protein after.',
-    sun: 'Controlled agility — no maximal cutting. Good day for the weekly review.'
+    sat: 'Vertical day 2: jumps first while fresh, then the bike intervals. Refuel with carbs + protein after.',
+    sun: 'No jumping today (game in 2 days). Controlled agility, no maximal cutting.'
   };
   out.push(['acc', R[dk]]);
   const hasData = Object.keys(S.workouts).length + S.weights.length + Object.keys(S.readiness).length > 3;
@@ -1757,7 +1770,7 @@ function vDay(date) {
     const r = exRec(date, it.ex);
     const tgl = COACH.target(it.ex);
     const sub = (ex.log === 'cardio' || it.sets === 1 ? rx.reps : `${rx.sets} × ${rx.reps}`) + (tgl != null ? ` · ${tgl} lb` : '');
-    h += `<div class="li tap" data-act="exOpen" data-ex="${it.ex}" data-date="${date}"><div class="thumb">${thumb(ex)}</div><div class="grow"><div class="t">${ex.name}${it.optional ? ' <span class="chip">optional</span>' : ''}</div><div class="s">${sub}${rx.rest ? ` · rest ${fmtRest(rx.rest)}` : ''}${rx.custom ? ' · <span class="acc">edited</span>' : ''}</div>${rx.adj ? `<div class="s" style="color:var(--${lvl === 'red' ? 'red' : 'yellow'})">${rx.adj}</div>` : ''}${r && r.status === 'skipped' ? `<div class="s">Skipped: ${esc(r.reason || '')}</div>` : ''}</div>${statusBtn(st, 'exQuick', `data-ex="${it.ex}" data-date="${date}"`)}</div>`;
+    h += `<div class="li tap" data-act="exOpen" data-ex="${it.ex}" data-date="${date}"><div class="thumb">${thumb(ex)}</div><div class="grow"><div class="t">${it.pair ? `<span class="chip acc">Pair ${it.pair}</span> ` : ''}${ex.name}${it.optional ? ' <span class="chip">optional</span>' : ''}</div><div class="s">${sub}${rx.rest ? ` · rest ${fmtRest(rx.rest)}` : ''}${rx.custom ? ' · <span class="acc">edited</span>' : ''}</div>${rx.adj ? `<div class="s" style="color:var(--${lvl === 'red' ? 'red' : 'yellow'})">${rx.adj}</div>` : ''}${r && r.status === 'skipped' ? `<div class="s">Skipped: ${esc(r.reason || '')}</div>` : ''}</div>${statusBtn(st, 'exQuick', `data-ex="${it.ex}" data-date="${date}"`)}</div>`;
   });
   h += `</div>`;
   if (pl.type === 'game') {
@@ -1820,6 +1833,7 @@ function exSheetHTML(id, date) {
     if (tg != null) h += `<p class="small"><b>Coach target:</b> <span class="acc" style="font-weight:700">${tg} lb</span>${rx.load ? ` · ${esc(rx.load)}` : ''}</p>`;
     else if (rx.load) h += `<p class="small"><b>Load:</b> ${esc(rx.load)}</p>`;
     if (it.note) h += `<p class="small"><b>Note:</b> ${esc(it.note)}</p>`;
+    if (it.pair) { const mate = pl.items.find(x => x.pair === it.pair && x.ex !== id); if (mate) h += `<p class="small"><span class="chip acc">Pair ${it.pair}</span> Alternate with <b>${esc(EX.byId[mate.ex].name)}</b>: one set of this, rest 2–3 min, one set of that, rest 2–3 min.</p>`; }
     if (rx.adj) h += notice('warn', rx.adj);
   } else if (rx && ui.editRx) {
     h += `<div class="card flat" id="rxEdit"><h4>Edit prescription</h4><div class="grid2"><div><label class="f">Sets</label><input type="number" name="sets" inputmode="numeric" min="1" max="10" value="${rx.sets}"></div><div><label class="f">Rest (seconds)</label><input type="number" name="rest" inputmode="numeric" min="0" step="15" value="${rx.rest}"></div></div>
@@ -2217,6 +2231,10 @@ function vDunk() {
   h += secTitle('Dunk milestones', `<span class="small muted">${doneN}/8</span>`);
   h += `<div class="card">${bar(doneN / 8)}<div style="margin-top:10px">${MILESTONES.map(([k, t, d, elbow], i) => { const m = S.milestones[k] || {}; return `<div class="ms ${m.done ? 'done' : ''}"><button class="num" data-act="msToggle" data-k="${k}" aria-label="Toggle milestone ${i + 1}">${m.done ? '✓' : i + 1}</button><div class="grow"><div class="t">${t}</div><div class="small muted">${d}</div>${m.done ? `<div class="row small" style="margin-top:4px"><span class="muted">Completed</span><input type="date" value="${m.date || ''}" data-chg="msDate" data-k="${k}" style="max-width:170px;min-height:34px;padding:4px 8px;font-size:14px"></div>` : ''}${elbow ? '<span class="chip red" style="margin-top:4px">Elbow clearance needed for gripping</span>' : ''}</div></div>`; }).join('')}</div></div>`;
   // progression
+  h += secTitle('Your vertical plan');
+  h += `<div class="card"><p style="margin-top:0">Two vertical days a week, built on the strongest finding in the research: <b>squats and jumps together beat either one alone</b> for most people.</p>
+    <ul class="bul small"><li><b>Thursday:</b> squat set → rest → jump set (pairs), plus RDLs paired with broad jumps.</li><li><b>Saturday:</b> pure jumps while fresh, then short bike intervals. This is 72 hours before Tuesday's game.</li><li><b>Sunday and Monday:</b> no jumping, so your legs are fresh for the game.</li><li>Jump volume starts low (~60 jumps a week) and builds to ~90 by week 7, with full rest between sets.</li></ul>
+    <button class="btn block" data-act="research">See the research (with sources)</button></div>`;
   h += secTitle('Jump development progression');
   h += `<div class="card flat tight small"><b>Plyometric safety rules</b><ul class="bul"><li>Keep jump volume low, especially early on.</li><li>Rest ~60–120 s between demanding jump sets.</li><li>Stop when jump height, landing quality or coordination drops.</li><li>Avoid frequent maximal jump testing (≈ every 4 weeks).</li><li>No demanding jumping on heavily fatigued legs (check readiness).</li><li>At ~210 lb, each landing loads your calves, Achilles, patellar tendons and knees heavily — progress gradually and favour soft surfaces.</li><li>No ball gripping, rim hanging or elbow-stressing activities until you have clinical clearance.</li></ul></div>`;
   STAGES.forEach(st => {
@@ -2285,6 +2303,34 @@ ACT.plyoLog = el => {
   const i = log.indexOf(t); if (i >= 0) log.splice(i, 1); else { log.push(t); log.sort(); }
   commit();
 };
+
+/* ---------- the research behind the vertical plan (quoted from the papers' abstracts) ---------- */
+const RESEARCH = [
+  { h: 'Squats + jumps together beat either alone (head-to-head trials)', items: [
+    { q: 'The SP group achieved a statistically greater improvement (p < 0.0001) than the S or P groups alone.', src: 'Adams et al., 1992, J Strength Cond Res — squat vs plyometric vs squat-plyometric, 6 weeks', doi: '10.1519/00124278-199202000-00006' },
+    { q: 'the combination training group produced improvements in vertical jump performance and leg strength that were significantly greater than improvements in the other 2 training groups (plyometric training and weight training).', src: 'Fatouros et al., 2000, J Strength Cond Res — 12 weeks, 41 men', doi: '10.1519/00124278-200011000-00016' } ] },
+  { h: 'Meta-analyses: complex training (alternating lift and jump) does best on average', items: [
+    { q: 'Complex training was more effective than weight resistance (2.6 cm; 95% CI: 0.2, 5.5 cm) and plyometric training (2.9 cm; 95% CI: 0.2, 5.8 cm)', src: 'Ma, Xu & Xu, 2025, J Sports Sci Med — meta-analysis', doi: '10.52082/jssm.2025.236' },
+    { q: 'both training interventions may lead to positive performance-based adaptations in team-sports with CPX interventions potentially leading to slightly greater effects.', src: 'Cormier et al., 2020, J Strength Cond Res — meta-analysis of 27 studies (CPX = set-for-set complex training)', doi: '10.1519/JSC.0000000000003493' } ] },
+  { h: 'Honest caveat: not every analysis finds a winner', items: [
+    { q: 'None of the training interventions were superior compared to each other in strength and/or power trained subjects, as well as in non-strength and/or power trained subjects. The ﬁndings support the combination of strength and power training to improve countermovement jump height.', src: 'Brandt et al., 2023, Int J Sports Med — network meta-analysis of 24 studies', doi: '10.1055/a-2105-0540' },
+    { q: 'squat training, jump training, and their combination seem to be equally effective in improving jump and sprint performance in team sports athletes.', src: 'Ulloa-Sánchez et al., 2025, J Strength Cond Res — meta-analysis, 131 articles', doi: '10.1519/jsc.0000000000005161' } ] },
+  { h: 'How much jumping, and how to rest', items: [
+    { q: 'training volumes of more than 10 weeks and more than 20 sessions, using high-intensity programs (with more than 50 jumps per session), were the strategies that seemed to maximize the probability of obtaining significantly greater improvements', src: 'de Villarreal et al., 2009, J Strength Cond Res — meta-analysis of 56 studies. Your plan starts lower than this on purpose (bodyweight + return from inactivity) and builds up.', doi: '10.1519/JSC.0b013e318196b7c6' },
+    { q: 'the combination of different types of plyometrics (squat jump + countermovement jump + drop jump) is recommended rather than using only 1 form', src: 'de Villarreal et al., 2009 (same paper). Your plan mixes squat jumps, countermovement jumps, pogos and snap-downs.', doi: '10.1519/JSC.0b013e318196b7c6' },
+    { q: 'protocols with intracomplex rest intervals ≥2 min (ES = 0.55)', src: 'Freitas et al., 2017, PLoS One — complex training meta-analysis (why you rest 2–3 min inside each pair)', doi: '10.1371/journal.pone.0180223' } ] },
+  { h: 'Two vertical days a week is enough', items: [
+    { q: 'Training twice weekly promoted more consistent gains, while three weekly sessions induced transient impairments linked to higher DOMS.', src: 'Li et al., 2025, Front Physiol — jump athletes, 4 weeks (non-randomized)', doi: '10.3389/fphys.2025.1671750' },
+    { q: 'Increases in 10- and 40-m sprint speed, COD speed, and VJ height can be achieved and maintained with as little as 1 plyometric training session per week.', src: 'Moran et al., 2024, J Strength Cond Res — randomized trial in soccer players', doi: '10.1519/JSC.0000000000004756' } ] },
+  { h: 'Why no jumping in the 2 days before a game', items: [
+    { q: 'Force plates can be used to evaluate recovery post-exercise, with a decline in performance on Days 1 and 2, and full recovery by Day 3.', src: 'Williams et al., 2025, J Funct Morphol Kinesiol — meta-analysis of 22 studies', doi: '10.3390/jfmk10020230' },
+    { q: 'Fatigue peaked between 24 and 48 h post-exercise and returned to baseline by 72 h.', src: 'Kadlubowski et al., 2026, Front Sports Act Living — squats + plyometrics in elite youth soccer players', doi: '10.3389/fspor.2026.1742295' } ] },
+  { h: 'What to expect', items: [
+    { q: 'PT provides a statistically significant and practically relevant improvement in vertical jump height with the mean effect ranging from 4.7% (SJ and DJ), over 7.5% (CMJA) to 8.7% (CMJ).', src: 'Markovic, 2007, Br J Sports Med — meta-analysis of jump training alone. Results vary a lot between people; these are averages, not promises.', doi: '10.1136/bjsm.2007.035113' } ] }
+];
+ACT.research = () => openSheet('The research', () => `<p class="small muted">Quotes are copied word-for-word from each paper's published abstract. I have not read the full texts.</p>` +
+  RESEARCH.map(sec => `<h4 style="margin-top:14px">${sec.h}</h4>` + sec.items.map(r => `<div class="card tight" style="margin:8px 0"><div style="font-style:italic">“${esc(r.q)}”</div><div class="small muted" style="margin-top:6px">${esc(r.src)}</div><a class="small" href="https://doi.org/${r.doi}" target="_blank" rel="noopener">doi.org/${r.doi}</a></div>`).join('')).join('') +
+  `<p class="small faint" style="margin-top:12px">Training research, not medical advice. Your elbow and recovery rules still take priority.</p>`);
 
 /* ---- coach.js ---- */
 /* HoopLab — Adaptive Coach (on-device rules) + AI Coach (Claude, opt-in).
@@ -2463,7 +2509,7 @@ const COACH = {
 /* ---------- AI Coach (Claude) ---------- */
 const AI_RULES = `You are the strength and conditioning coach inside HoopLab, a personal training app for a 24-year-old, about 6 ft, roughly 210 lb recreational basketball player who is returning after a long period of inactivity.
 Goals, in priority order: last a full basketball game without fading in the second half; build lower-body strength and power toward dunking someday; improve lateral quickness and change of direction; lose fat toward 200 lb while keeping muscle; get stronger without aggravating a partial tear of the right common extensor tendon (elbow).
-Weekly structure: Monday rest, Tuesday basketball game, Wednesday easy aerobic, Thursday lower body + jumps, Friday upper body + elbow rehab, Saturday conditioning intervals, Sunday agility + easy aerobic. He dislikes running; prefer bike, elliptical or incline walking.
+Weekly structure: Monday rest (no jumping the day before a game), Tuesday basketball game, Wednesday easy aerobic, Thursday vertical day 1 (squats and RDLs each paired set-for-set with jumps: complex training), Friday upper body + elbow rehab, Saturday vertical day 2 (jumps first, then short bike intervals), Sunday agility + easy aerobic with no jumping. Vertical jump is his top athletic priority; keep the two vertical days, and never move jump or heavy leg work to Sunday or Monday. He dislikes running; prefer bike, elliptical or incline walking.
 
 Your job: read the training data and decide whether next week's workouts should be made a bit more challenging where they were clearly too easy, held where appropriate, or reduced where recovery or symptoms suggest it.
 
